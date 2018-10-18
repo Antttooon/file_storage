@@ -2,6 +2,7 @@
 .idea
 media
 media/**
+store/**
 *.pyc
 *.pyo
 *.mo
