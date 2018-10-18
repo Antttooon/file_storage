@@ -1,0 +1,166 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %} Главная {% endblock %}
+{% block content %}
+
+
+
+<div class="row">
+
+    <div class="container">
+
+        <div class="row">
+            <blockquote>Upload </blockquote>
+            <div class="col-sm-4">
+
+                <form id="upload_form" action="{% url 'file_upload' %}" method="post" enctype="multipart/form-data"> {% csrf_token %}
+                    <div class="form-group">
+                        <input type="file" name="file" required="" id="id_file">
+                    </div>
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-default" onclick="upload(); return false;" >Отправить</button>
+                    </div>
+                </form>
+
+            </div>
+            <div class="col-sm-8" id="uploaded_message">
+            </div>
+        </div>
+        <hr>
+        <div class="row">
+            <blockquote>Download</blockquote>
+            <div class="col-sm-4">
+                <form id="find_form" action="{% url 'download' %}" method="post"> {% csrf_token %}
+                    <div class="form-group">
+                        <input type="text" name="filename" required="" id="search">
+                    </div>
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-default">Отправить</button>
+                    </div>
+                </form>
+            </div>
+            <div class="col-sm-8" id="download_message">
+            </div>
+        </div>
+        <hr>
+        <div class="row">
+            <blockquote>Delete</blockquote>
+            <div class="col-sm-4">
+                <form id="del_form" action="{% url 'delete' %}" method="get"> {% csrf_token %}
+                    <div class="form-group">
+                        <input type="text" name="filename" required="" id="search_del">
+                    </div>
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-default" onclick="del_file(); return false;">Отправить</button>
+                    </div>
+                </form>
+            </div>
+            <div class="col-sm-8" id="delete_message">
+            </div>
+        </div>
+{% comment %}
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <div class="row">
+            <div class="col-sm-offset-2 col-sm-8">
+                {% for f in files %}
+                <a href="{{ f.get_absolute_url }}" target="_blank">
+                {{ forloop.counter }} -</a>
+                    {{ f.get_filename }}
+                <br>
+                {% endfor %}
+            </div>
+        </div>
+{% endcomment %}
+    </div>
+</div>
+
+{% endblock %}
+
+{% block js %}
+<script type="text/javascript">
+ function upload(){
+    var frm = $('#upload_form');
+    var file = $('#id_file');
+    var formData = new FormData($('#upload_form')[0]);
+    formData.append('file', file.prop('files')[1]);
+    $.ajax({
+        type: frm.attr('method'),
+        url: frm.attr('action'),
+        contentType: false,
+        processData: false,
+        data: formData,
+        enctype: 'multipart/form-data',
+        success: function (data) {
+            $("#uploaded_message").html(data);
+            $('#upload_form').trigger("reset");
+        },
+        error: function(data) {
+            $("#uploaded_message").html("Something went wrong!");
+        }
+      });
+
+      return false;
+    }
+</script>
+
+
+<script type="text/javascript">
+ function del_file(){
+    var frm = $('#del_form');
+    console.log(frm.serialize());
+    $.ajax({
+        type: 'GET',
+        url: frm.attr('action'),
+        contentType: false,
+        processData: false,
+        data: frm.serialize(),
+        success: function (data) {
+            $("#delete_message").html(data);
+            $('#del_form').trigger("reset");
+        },
+        error: function(data) {
+            $("#delete_message").html("Something went wrong!");
+        }
+      });
+
+      return false;
+    }
+</script>
+
+
+
+{% endblock %}
+
+
+
+<!--<script type="text/javascript">-->
+ <!--function find_file(){-->
+    <!--var frm = $('#find_form');-->
+    <!--console.log(frm.serialize());-->
+    <!--&lt;!&ndash;var formData = new FormData($('#find_form')[0]);&ndash;&gt;-->
+    <!--&lt;!&ndash;console.log(formData);&ndash;&gt;-->
+    <!--$.ajax({-->
+        <!--type: 'GET',-->
+        <!--url: frm.attr('action'),-->
+        <!--contentType: false,-->
+        <!--processData: false,-->
+        <!--data: frm.serialize(),-->
+        <!--&lt;!&ndash;data: formData,&ndash;&gt;-->
+        <!--success: function (data) {-->
+            <!--$("#download_message").html(data);-->
+            <!--frm.reset();-->
+        <!--},-->
+        <!--error: function(data) {-->
+            <!--$("#download_message").html("Something went wrong!");-->
+        <!--}-->
+      <!--});-->
+
+      <!--return false;-->
+    <!--}-->
+<!--</script>-->

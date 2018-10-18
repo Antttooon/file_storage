@@ -1,0 +1,13 @@
+.DS_Store
+.idea
+media
+media/**
+*.pyc
+*.pyo
+*.mo
+*.iml
+*.xml
+db.sqlite3
+**/migrations/**
+!**/migrations
+!**/migrations/__init__.py
