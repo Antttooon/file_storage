@@ -9,35 +9,24 @@ import os
 import mimetypes
 
 def main(request):
-    file = None
     files = File.objects.all()[::-1]
-    if request.is_ajax():
-        form = UploadFileForm(request.POST, request.FILES)
-        if form.is_valid():
-            instance = form.save()
-            file = instance.file.name[3:]
-            return HttpResponse(file)
-
     form = UploadFileForm()
     return render(request, 'main.html', {'form': form,
-                                         'file': file,
                                          'files': files})
 
 
 def file_upload(request):
     if request.method == 'POST':
-        if request.is_ajax():
-            form = UploadFileForm(request.POST, request.FILES or None)
-            if form.is_valid():
-                try:
-                    instance = form.save()
-                except IntegrityError:
-                    return HttpResponse("File dublicate error: This file has already been uploaded")
-                res = "<p> File uploaded:  {}</p>".format(instance.file.name[3:])
-                return HttpResponse(res)
-            return HttpResponse("No" + str(request.FILES) + str(request.POST))
-        else:
-            return HttpResponse('Nonono')
+        form = UploadFileForm(request.POST, request.FILES or None)
+        if form.is_valid():
+            try:
+                instance = form.save()
+            except IntegrityError:
+                return HttpResponse("File dublicate error: This file has already been uploaded")
+            res = "<p> File uploaded:  {}</p>".format(instance.file.name[3:])
+            return HttpResponse(res)
+        return HttpResponse("No" + str(request.FILES) + str(request.POST))
+
 
 
 def search(search_string):
@@ -83,9 +72,7 @@ def delete(request):
         if search_string is not None:
             res = search(search_string)
             if res:
-                db_row = File.objects.filter(file=res.file)
-                if db_row:
-                    db_row.delete()
+                res.delete()
             file_paths = get_file_paths(res)
             if file_paths:
                 try:
